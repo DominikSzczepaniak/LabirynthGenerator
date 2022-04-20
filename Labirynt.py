@@ -1,6 +1,27 @@
 import tkinter as tk
+from collections import defaultdict
 # from tkinter import ttk
 from PIL import Image
+
+class SpanningTree:
+    def __init__(self, width, height):
+        self.adj = defaultdict(list)
+        rozmiar = width * height
+        self.FU = range(rozmiar+5)
+        self.FUsize = [1] * (rozmiar+5)
+    def parent(self, a):
+        return self.FU[a]
+    def connect(self, a, b):
+        if(self.parent(a) != self.parent(b)):
+            if(self.FUsize[a] < self.FUsize[b]):
+                a, b = b, a
+            self.FUsize[a] += self.FUsize[b]
+            self.FU[b] = self.FU[a]
+            self.adj[a].append(b)
+            self.adj[b].append(a)
+    def wypisz(self):
+        for i in self.adj:
+            print(i)
 
 def getSize():
     DataInput = tk.Tk()
