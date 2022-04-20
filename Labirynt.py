@@ -2,7 +2,7 @@ import tkinter as tk
 # from tkinter import ttk
 from PIL import Image
 
-def main():
+def getSize():
     DataInput = tk.Tk()
     width_var = tk.StringVar()
     height_var = tk.StringVar()
@@ -15,10 +15,18 @@ def main():
     height = height_var.get()
     width = width_var.get()
     DataInput.destroy()
+    return width, height
+
+def generate(width, height):
     Lab = tk.Tk()
     Lab.geometry("{0}x{1}".format(width, height))
     Lab.title("Labirynt gotowy!")
+    
     Lab.mainloop()
+
+def main():
+    width, height = getSize()
+    generate(width, height)
 
 if(__name__ == "__main__"):
     main()
