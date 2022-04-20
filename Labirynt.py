@@ -14,12 +14,14 @@ def main():
     tk.Entry(frm, textvariable=width_var).grid(column=1, row=1)
     tk.Button(frm, text="Generate", command=root.quit).grid(column=0, row=3)
     root.mainloop()
-    print(height_var.get())
-    print(width_var.get())
-    #im = Image.new("RGB", size, "white")
-    #im.show()
-
-    #del im
+    height = height_var.get()
+    width = width_var.get()
+    print(height, width)
+    root.destroy()
+    Lab = tk.Tk()
+    Lab.geometry("{0}x{1}".format(width, height))
+    Lab.title("Labirynt gotowy!")
+    Lab.mainloop()
 
 if(__name__ == "__main__"):
     main()
