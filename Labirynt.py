@@ -1,4 +1,3 @@
-from email import message
 import tkinter as tk
 from collections import defaultdict
 from tkinter import messagebox
@@ -8,18 +7,22 @@ class SpanningTree:
     def __init__(self, width, height):
         self.adj = defaultdict(list)
         rozmiar = width * height
-        self.FU = range(rozmiar+5)
-        self.FUsize = [1] * (rozmiar+5)
-    def parent(self, a):
-        return self.FU[a]
+        self.parent = range(rozmiar+5)
+        self.size = [1] * (rozmiar+5)
+    def FindSet(self, a):
+        if(a == self.parent[a]):
+            return a
+        par = self.FindSet(self.parent[a])
+        self.parent[a] = par
+        return par
     def connect(self, a, b):
-        if(self.parent(a) != self.parent(b)):
-            if(self.FUsize[a] < self.FUsize[b]):
+        a = self.FindSet(a)
+        b = self.FindSet(b)
+        if(a != b):
+            if(self.size[a] < self.size[b]):
                 a, b = b, a
-            self.FUsize[a] += self.FUsize[b]
-            self.FU[b] = self.FU[a]
-            self.adj[a].append(b)
-            self.adj[b].append(a)
+            self.parent[b] = a
+            self.size[a] += self.size[b]
     def wypisz(self):
         for i in self.adj:
             print(i)
