@@ -2,12 +2,15 @@ import tkinter as tk
 from collections import defaultdict
 from tkinter import messagebox
 from PIL import Image
+from random import seed
+from random import randint
+import time
 
 class SpanningTree:
     def __init__(self, width, height):
         self.adj = defaultdict(list)
         rozmiar = width * height
-        self.parent = range(rozmiar+5)
+        self.parent = [i for i in range(rozmiar+5)]
         self.size = [1] * (rozmiar+5)
     def FindSet(self, a):
         if(a == self.parent[a]):
@@ -15,7 +18,7 @@ class SpanningTree:
         par = self.FindSet(self.parent[a])
         self.parent[a] = par
         return par
-    def connect(self, a, b):
+    def Union(self, a, b):
         a = self.FindSet(a)
         b = self.FindSet(b)
         if(a != b):
@@ -23,13 +26,13 @@ class SpanningTree:
                 a, b = b, a
             self.parent[b] = a
             self.size[a] += self.size[b]
-    def wypisz(self):
-        for i in self.adj:
-            print(i)
+            self.adj[a].append(b)
+            self.adj[b].append(a)
 
 class Labirynth:
     def __init__(self):
         self.SizesGet()
+        #self.GenerateLabirynt(2,3)
     def SizesGet(self):
         DataInput = tk.Tk()
         width_var = tk.StringVar()
@@ -43,7 +46,7 @@ class Labirynth:
         height = height_var.get()
         width = width_var.get()
         DataInput.destroy()
-        return self.generate(width, height)
+        return self.LabiryntWindow(width, height)
     def checkSizes(self, height, width, DataInput):
         try:
             height = int(height)
@@ -56,7 +59,7 @@ class Labirynth:
             return
         else:
             DataInput.quit()
-    def generate(self, width, height):
+    def LabiryntWindow(self, width, height):
         Lab = tk.Tk()
         Lab.geometry("{0}x{1}".format(width, height))
         Lab.title("Labirynt gotowy!")
@@ -65,10 +68,29 @@ class Labirynth:
     def AskAgain(self):
         pass
         #funkcja pytajaca czy uzytkownik chce utworzyc labirynt jeszcze raz na podstawie innych wymiarow (pozniej mozna zmienic to, ze w jednym oknie bedzie wszystko dzialac i przy kliknieciu generate bedzie tworzyc nowy labirynt)
+    def GenerateLabirynt(self, width, height):
+        #Na podstawie podanych wymiarow tworzymy wierzcholki - jeśli np. width = 50, height = 40, to node 51 jest w tablicy na miejscu [2][1]. Wiersz = n/width, kolumna= n - n/width.
+        # Bazowo miedzy wszystkimi miejscami w tablicy jest sciana, a MSP bedziemy je usuwac. Przejdzmy wiec po wszystkich parach a b, gdzie a, b nalezy do przedzialu (1, ilosc wierzcholkow) i wylosujmy liczbe z przedzialu (1, 10^7). Pozniej posortujmy krawedzie i zrobmy MSP na nich. Ustalone MSP bedzie droga poprawna w labiryncie. Wiec odczytamy ta droge i usuniemy poprawne sciany w tablicy. Na koncu wystarczy wybrac dowolny node na wyjscie i wejscie i mamy labirynt. 
+        edges = []
+        for i in range(1, width*height+1):
+            for j in range(1, width*height+1):
+                if(i==j):
+                    continue
+                seed(time.time())
+                wartosc = randint(1, 10000000)
+                edges.append([i, j, wartosc])
+        edges.sort(key = lambda edges:edges[2])
+        MSP = SpanningTree(width, height)
+        for a, b, c in edges:
+            if(MSP.FindSet(a) == MSP.FindSet(b)):
+                continue
+            MSP.Union(a, b)
+
     
 
 def main():
     newLab = Labirynth()
+    
 
 if(__name__ == "__main__"):
     main()
