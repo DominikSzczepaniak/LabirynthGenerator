@@ -31,8 +31,8 @@ class SpanningTree:
 
 class Labirynth:
     def __init__(self):
-        self.SizesGet()
-        #self.GenerateLabirynt(2,3)
+        # self.SizesGet()
+        self.GenerateLabirynt(2,3)
     def SizesGet(self):
         DataInput = tk.Tk()
         width_var = tk.StringVar()
@@ -72,13 +72,23 @@ class Labirynth:
         #Na podstawie podanych wymiarow tworzymy wierzcholki - jeśli np. width = 50, height = 40, to node 51 jest w tablicy na miejscu [2][1]. Wiersz = n/width, kolumna= n - n/width.
         # Bazowo miedzy wszystkimi miejscami w tablicy jest sciana, a MSP bedziemy je usuwac. Przejdzmy wiec po wszystkich parach a b, gdzie a, b nalezy do przedzialu (1, ilosc wierzcholkow) i wylosujmy liczbe z przedzialu (1, 10^7). Pozniej posortujmy krawedzie i zrobmy MSP na nich. Ustalone MSP bedzie droga poprawna w labiryncie. Wiec odczytamy ta droge i usuniemy poprawne sciany w tablicy. Na koncu wystarczy wybrac dowolny node na wyjscie i wejscie i mamy labirynt. 
         edges = []
+        vert = [[1, 0], [-1, 0], [0, 1], [0,-1]]
         for i in range(1, width*height+1):
-            for j in range(1, width*height+1):
-                if(i==j):
+            line = (i-1)//width+1 #getting line and column in map for node i
+            column = i%width
+            if(column == 0):
+                column = width
+            for j in vert: #right left up down
+                x = column+j[0]
+                y = line + j[1]
+                if(x<=0 or x > width or y <= 0 or y > height):
                     continue
                 seed(time.time())
-                wartosc = randint(1, 10000000)
-                edges.append([i, j, wartosc])
+                wartosc = randint(1, 10000000) 
+                node = (y-1)*width + x #converting map place to node number
+                if(node == i):
+                    continue
+                edges.append([int(i), int(node), int(wartosc)])
         edges.sort(key = lambda edges:edges[2])
         MSP = SpanningTree(width, height)
         for a, b, c in edges:
@@ -94,6 +104,5 @@ def main():
 
 if(__name__ == "__main__"):
     main()
-
 
 
