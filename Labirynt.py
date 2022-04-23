@@ -32,7 +32,7 @@ class SpanningTree:
 class Labirynth:
     def __init__(self):
         # self.SizesGet()
-        self.GenerateLabirynt(2,3)
+        self.GenerateLabirynt(4,3)
     def SizesGet(self):
         DataInput = tk.Tk()
         width_var = tk.StringVar()
@@ -91,12 +91,42 @@ class Labirynth:
                 edges.append([int(i), int(node), int(wartosc)])
         edges.sort(key = lambda edges:edges[2])
         MSP = SpanningTree(width, height)
+        polaczone = []
         for a, b, c in edges:
             if(MSP.FindSet(a) == MSP.FindSet(b)):
                 continue
             MSP.Union(a, b)
+            polaczone.append([a, b])
+        #for every node create info as :[0,0,0,0] meaning that there is no wall on the left, above, right, below, if number is 1, there is a wall. originally set every value to 1 and when there is edge in MSP make it 0. 
+        Mapinfo = [[1,1,1,1] for i in range(width*height+5)] 
+        for i in range(1, width+1): #taking care of above wall for every upmost cell
+            Mapinfo[i][1] = 1
+        for i in range(1, width*height+1, width):#taking care of left wall for every leftmost cell 
+            Mapinfo[i][0] = 1
+        for i in range(1 + (height-1)*width, width*height+1):#downmost cells
+            Mapinfo[i][3] = 1
+        for i in range(width, width*height+1, width): #rightmost cells
+            Mapinfo[i][2] = 1
+        #entry will be on leftmost up cell and exit will be at rightmost down cell
+        Mapinfo[1][1] = 0
+        Mapinfo[width*height][3] = 0
+        for a, b in polaczone:
+            if(a > b):
+                a, b = b, a
+            if(a == b-1):
+                #a is on left to b
+                Mapinfo[a][2] = 0
+                Mapinfo[b][0] = 0
+            elif(a == b+1):
+                #a is on right to b
+                Mapinfo[a][0] = 0
+                Mapinfo[b][2] = 0
+            else:
+                #a is less than b, so it must be above b
+                Mapinfo[a][3] = 0
+                Mapinfo[b][1] = 0
 
-    
+
 
 def main():
     newLab = Labirynth()
