@@ -38,8 +38,8 @@ class SpanningTree:
 
 class Labirynth:
     def __init__(self):
-        # self.SizesGet()
-        self.GenerateLabirynt(20,15)
+        self.SizesGet()
+        #self.GenerateLabirynt(20,15)
     def SizesGet(self):
         DataInput = tk.Tk()
         width_var = tk.StringVar()
@@ -53,16 +53,16 @@ class Labirynth:
         height = height_var.get()
         width = width_var.get()
         DataInput.destroy()
-        return self.LabiryntWindow(width, height)
+        return self.GenerateLabirynt(width, height)
     def checkSizes(self, height, width, DataInput):
         try:
             height = int(height)
             width = int(width)
         except:
-            messagebox.showerror("Błąd", "Wartość powinna być z przedziału od 100 do 1000! Popraw wejście")
+            messagebox.showerror("Error", "Value should be between 10 and 200!")
             return
-        if(height < 100 or height > 1000 or width < 100 or width > 1000):
-            messagebox.showerror("Błąd", "Wartość powinna być z przedziału od 100 do 1000! Popraw wejście")
+        if(height < 10 or height > 200 or width < 10 or width > 200):
+            messagebox.showerror("Error", "Value should be between 10 and 200!")
             return
         else:
             DataInput.quit()
@@ -78,6 +78,8 @@ class Labirynth:
     def GenerateLabirynt(self, width, height):
         #Na podstawie podanych wymiarow tworzymy wierzcholki - jeśli np. width = 50, height = 40, to node 51 jest w tablicy na miejscu [2][1]. Wiersz = n/width, kolumna= n - n/width.
         # Bazowo miedzy wszystkimi miejscami w tablicy jest sciana, a MSP bedziemy je usuwac. Przejdzmy wiec po wszystkich parach a b, gdzie a, b nalezy do przedzialu (1, ilosc wierzcholkow) i wylosujmy liczbe z przedzialu (1, 10^7). Pozniej posortujmy krawedzie i zrobmy MSP na nich. Ustalone MSP bedzie droga poprawna w labiryncie. Wiec odczytamy ta droge i usuniemy poprawne sciany w tablicy. Na koncu wystarczy wybrac dowolny node na wyjscie i wejscie i mamy labirynt. 
+        width = int(width)
+        height = int(height)
         edges = []
         vert = [[1, 0], [-1, 0], [0, 1], [0,-1]]
         for i in range(1, width*height+1):
