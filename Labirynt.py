@@ -1,10 +1,17 @@
 import tkinter as tk
 from collections import defaultdict
 from tkinter import messagebox
-from PIL import Image
+from PIL import Image, ImageDraw
 from random import seed
 from random import randint
 import time
+
+#TODO:
+#- umozliwianie zmieniania wielkosci cell na pixele i pokazywanie obok przy ruszaniu suwakiem jak wygladalby labirynt 2x2 z takimi wymiarami
+#- pokazywanie labiryntu w oknie "gotowe"
+#- mozliwosc zapisania labiryntu do pliku (pdf, jpg, png etc.) w dowolnie wybranym miejscu na dysku
+#- pokazanie sciezki aby dojsc do celu
+#- wizualizacja jak rozne algorytmy wybieralyby sciezki aby przejsc labirynt.
 
 class SpanningTree:
     def __init__(self, width, height):
@@ -32,7 +39,7 @@ class SpanningTree:
 class Labirynth:
     def __init__(self):
         # self.SizesGet()
-        self.GenerateLabirynt(4,3)
+        self.GenerateLabirynt(20,15)
     def SizesGet(self):
         DataInput = tk.Tk()
         width_var = tk.StringVar()
@@ -125,6 +132,38 @@ class Labirynth:
                 #a is less than b, so it must be above b
                 Mapinfo[a][3] = 0
                 Mapinfo[b][1] = 0
+        LabIm = Image.new("RGB", (width*4+1, height*4+1), color='white')
+        LabImDraw = ImageDraw.Draw(LabIm)
+        LabImDraw.rectangle([(0,0),(width*4, height*4)], fill='white', outline='black')
+        id = 1
+        for j in range(1, height+1):
+            for i in range(1,width+1):
+                self.DrawCell(LabImDraw, i, j, Mapinfo[id])
+                id+=1 
+        LabImDraw.rectangle([(0, 1), (0, 3)], fill = 'white', outline = 'white')
+        LabImDraw.rectangle([(width*4, 1+(height-1)*4), (width*4, 1+(height-1)*4+2)], fill = 'white', outline = 'white')
+        #pixele ida od lewej gory - (0,0)
+        # |.#.|.#.|.#.|
+        LabIm.show()
+    def DrawCell(self, LabImDraw, x, y, infoDraw):
+        # center = [[int(2+(x-1)*4)],[int(2+(y-1)*4)]]
+        centerx = int(2+(x-1)*4)
+        centery = int(2+(y-1)*4)
+        lewygornyrog = (centerx-2, centery-2)
+        lewydolnyrog = (centerx-2, centery+2)
+        prawydolnyrog = (centerx+2, centery+2)
+        prawygornyrog = (centerx+2, centery-2)
+        if(infoDraw[0] == 1):
+            LabImDraw.rectangle([lewygornyrog, lewydolnyrog], fill='black')
+        if(infoDraw[1] == 1):
+            LabImDraw.rectangle([lewygornyrog, prawygornyrog], fill = 'black')
+        if(infoDraw[2] == 1):
+            LabImDraw.rectangle([prawygornyrog, prawydolnyrog], fill = 'black')
+        if(infoDraw[3] == 1):
+            LabImDraw.rectangle([lewydolnyrog, prawydolnyrog], fill = 'black')
+
+
+
 
 
 
