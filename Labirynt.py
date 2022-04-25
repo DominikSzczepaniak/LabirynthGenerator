@@ -1,7 +1,7 @@
 import tkinter as tk
 from collections import defaultdict
 from tkinter import *
-from tkinter import filedialog
+from tkinter import filedialog, messagebox
 from PIL import Image, ImageDraw, ImageTk
 from random import seed
 from random import randint
@@ -40,7 +40,6 @@ class SpanningTree:
 class Labirynth:
     def __init__(self):
         self.SizesGet()
-        #self.GenerateLabirynt(20,15)
     def SizesGet(self):
         DataInput = tk.Tk()
         width_var = tk.StringVar()
@@ -51,8 +50,8 @@ class Labirynth:
         tk.Entry(DataInput, textvariable=width_var).grid(column=1, row=1)
         tk.Button(DataInput, text="Generate", command=lambda: self.checkSizes(height_var.get(), width_var.get(), DataInput)).grid(column=0, row=3)
         DataInput.mainloop()
-        height = height_var.get()
-        width = width_var.get()
+        height = int(height_var.get())
+        width = int(width_var.get())
         DataInput.destroy()
         return self.LabiryntWindow(width, height)
     def checkSizes(self, height, width, DataInput):
@@ -68,8 +67,6 @@ class Labirynth:
         else:
             DataInput.quit()
     def LabiryntWindow(self, width, height):
-        width = int(width)
-        height = int(height)
         Lab = tk.Tk()
         Lab.geometry("{0}x{1}".format(width*4+200, height*4+400))
         Lab.title("Labirynt gotowy!")
@@ -85,8 +82,6 @@ class Labirynth:
     def GenerateLabirynt(self, width, height):
         #Na podstawie podanych wymiarow tworzymy wierzcholki - jeśli np. width = 50, height = 40, to node 51 jest w tablicy na miejscu [2][1]. Wiersz = n/width, kolumna= n - n/width.
         # Bazowo miedzy wszystkimi miejscami w tablicy jest sciana, a MSP bedziemy je usuwac. Przejdzmy wiec po wszystkich parach a b, gdzie a, b nalezy do przedzialu (1, ilosc wierzcholkow) i wylosujmy liczbe z przedzialu (1, 10^7). Pozniej posortujmy krawedzie i zrobmy MSP na nich. Ustalone MSP bedzie droga poprawna w labiryncie. Wiec odczytamy ta droge i usuniemy poprawne sciany w tablicy. Na koncu wystarczy wybrac dowolny node na wyjscie i wejscie i mamy labirynt. 
-        width = int(width)
-        height = int(height)
         edges = []
         vert = [[1, 0], [-1, 0], [0, 1], [0,-1]]
         for i in range(1, width*height+1):
