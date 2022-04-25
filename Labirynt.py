@@ -1,14 +1,15 @@
 import tkinter as tk
 from collections import defaultdict
-from tkinter import messagebox
-from PIL import Image, ImageDraw
+from tkinter import *
+from tkinter import filedialog
+from PIL import Image, ImageDraw, ImageTk
 from random import seed
 from random import randint
 import time
 
 #TODO:
 #- umozliwianie zmieniania wielkosci cell na pixele i pokazywanie obok przy ruszaniu suwakiem jak wygladalby labirynt 2x2 z takimi wymiarami
-#- pokazywanie labiryntu w oknie "gotowe"
+#- pokazywanie labiryntu w oknie "gotowe" DONE
 #- mozliwosc zapisania labiryntu do pliku (pdf, jpg, png etc.) w dowolnie wybranym miejscu na dysku
 #- pokazanie sciezki aby dojsc do celu
 #- wizualizacja jak rozne algorytmy wybieralyby sciezki aby przejsc labirynt.
@@ -53,7 +54,7 @@ class Labirynth:
         height = height_var.get()
         width = width_var.get()
         DataInput.destroy()
-        return self.GenerateLabirynt(width, height)
+        return self.LabiryntWindow(width, height)
     def checkSizes(self, height, width, DataInput):
         try:
             height = int(height)
@@ -67,10 +68,16 @@ class Labirynth:
         else:
             DataInput.quit()
     def LabiryntWindow(self, width, height):
+        width = int(width)
+        height = int(height)
         Lab = tk.Tk()
-        Lab.geometry("{0}x{1}".format(width, height))
+        Lab.geometry("{0}x{1}".format(width*4+200, height*4+400))
         Lab.title("Labirynt gotowy!")
         Lab.resizable(False, False)
+        img = self.GenerateLabirynt(width, height)
+        photo = ImageTk.PhotoImage(img)
+        PhotoObject = Label(Lab, image = photo, anchor="center",bd='20')
+        PhotoObject.pack()
         Lab.mainloop()
     def AskAgain(self):
         pass
@@ -144,9 +151,8 @@ class Labirynth:
                 id+=1 
         LabImDraw.rectangle([(0, 1), (0, 3)], fill = 'white', outline = 'white')
         LabImDraw.rectangle([(width*4, 1+(height-1)*4), (width*4, 1+(height-1)*4+2)], fill = 'white', outline = 'white')
-        #pixele ida od lewej gory - (0,0)
-        # |.#.|.#.|.#.|
-        LabIm.show()
+        return LabIm
+        # LabIm.show()
     def DrawCell(self, LabImDraw, x, y, infoDraw):
         # center = [[int(2+(x-1)*4)],[int(2+(y-1)*4)]]
         centerx = int(2+(x-1)*4)
