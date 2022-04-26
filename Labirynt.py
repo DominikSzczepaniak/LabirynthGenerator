@@ -1,14 +1,16 @@
 import tkinter as tk
 from collections import defaultdict
 from tkinter import *
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, Scale
+import tkinter
 from PIL import Image, ImageDraw, ImageTk
 from random import seed
 from random import randint
 import time
 
 #TODO:
-#- umozliwianie zmieniania wielkosci cell na pixele i pokazywanie obok przy ruszaniu suwakiem jak wygladalby labirynt 2x2 z takimi wymiarami
+#- umozliwianie zmieniania wielkosci cell na pixele i pokazywanie obok przy ruszaniu suwakiem jak wygladalby labirynt 2x2 z takimi wymiarami 1/2 DONE (tylko liczby parzyste)
+#pobierz od uzytkownika wielkosc monitora i wyswietl informacje jesli labirynt nie zmiesci sie na jego ekranie przy obecnie wybranych wymiarach
 #- pokazywanie labiryntu w oknie "gotowe" DONE
 #- mozliwosc zapisania labiryntu do pliku (pdf, jpg, png etc.) w dowolnie wybranym miejscu na dysku
 #- pokazanie sciezki aby dojsc do celu
@@ -44,16 +46,21 @@ class Labirynth:
         DataInput = tk.Tk()
         width_var = tk.StringVar()
         height_var = tk.StringVar()
+        cellSize_var = tk.StringVar()
         tk.Label(DataInput, text="Height:").grid(column=0, row=0)
         tk.Label(DataInput, text="Width:").grid(column=0, row=1)
         tk.Entry(DataInput, textvariable=height_var).grid(column=1, row=0)
         tk.Entry(DataInput, textvariable=width_var).grid(column=1, row=1)
         tk.Button(DataInput, text="Generate", command=lambda: self.checkSizes(height_var.get(), width_var.get(), DataInput)).grid(column=0, row=3)
+        tkinter.Scale(DataInput, from_=4, to=64,variable=cellSize_var, orient=tkinter.HORIZONTAL).grid(column=0, row=4)
         DataInput.mainloop()
+        cellSize = int(cellSize_var.get())
+        if(cellSize%2==1):
+            cellSize-=1
         height = int(height_var.get())
         width = int(width_var.get())
         DataInput.destroy()
-        return self.LabiryntWindow(width, height, 32)
+        return self.LabiryntWindow(width, height, cellSize)
     def checkSizes(self, height, width, DataInput):
         try:
             height = int(height)
@@ -66,9 +73,9 @@ class Labirynth:
             return
         else:
             DataInput.quit()
-    def LabiryntWindow(self, width, height, cellSize=4):
+    def LabiryntWindow(self, width, height, cellSize=12):
         Lab = tk.Tk()
-        Lab.geometry("{0}x{1}".format(width*cellSize+200, height*cellSize+400))
+        Lab.geometry("{0}x{1}".format(width*cellSize+200, height*cellSize+200))
         Lab.title("Labirynt gotowy!")
         Lab.resizable(False, False)
         img = self.GenerateLabirynt(width, height, cellSize)
@@ -79,7 +86,7 @@ class Labirynth:
     def AskAgain(self):
         pass
         #funkcja pytajaca czy uzytkownik chce utworzyc labirynt jeszcze raz na podstawie innych wymiarow (pozniej mozna zmienic to, ze w jednym oknie bedzie wszystko dzialac i przy kliknieciu generate bedzie tworzyc nowy labirynt)
-    def GenerateLabirynt(self, width, height, cellSize=4):
+    def GenerateLabirynt(self, width, height, cellSize):
         edges = []
         vert = [[1, 0], [-1, 0], [0, 1], [0,-1]]
         for i in range(1, width*height+1):
@@ -145,7 +152,7 @@ class Labirynth:
         LabImDraw.rectangle([(0, 1), (0, cellSize-1)], fill = 'white', outline = 'white')
         LabImDraw.rectangle([(width*cellSize, 1+(height-1)*cellSize), (width*cellSize, height*cellSize-1)], fill = 'white', outline = 'white')
         return LabIm
-    def DrawCell(self, LabImDraw, x, y, infoDraw, cellSize = 4):
+    def DrawCell(self, LabImDraw, x, y, infoDraw, cellSize):
         # center = [[int(2+(x-1)*4)],[int(2+(y-1)*4)]]
         centerx = int(cellSize//2+(x-1)*cellSize)
         centery = int(cellSize//2+(y-1)*cellSize)
