@@ -53,7 +53,7 @@ class Labirynth:
         height = int(height_var.get())
         width = int(width_var.get())
         DataInput.destroy()
-        return self.LabiryntWindow(width, height)
+        return self.LabiryntWindow(width, height, 32)
     def checkSizes(self, height, width, DataInput):
         try:
             height = int(height)
@@ -66,12 +66,12 @@ class Labirynth:
             return
         else:
             DataInput.quit()
-    def LabiryntWindow(self, width, height):
+    def LabiryntWindow(self, width, height, cellSize=4):
         Lab = tk.Tk()
-        Lab.geometry("{0}x{1}".format(width*4+200, height*4+400))
+        Lab.geometry("{0}x{1}".format(width*cellSize+200, height*cellSize+400))
         Lab.title("Labirynt gotowy!")
         Lab.resizable(False, False)
-        img = self.GenerateLabirynt(width, height)
+        img = self.GenerateLabirynt(width, height, cellSize)
         photo = ImageTk.PhotoImage(img)
         PhotoObject = Label(Lab, image = photo, anchor="center",bd='20')
         PhotoObject.pack()
@@ -79,9 +79,7 @@ class Labirynth:
     def AskAgain(self):
         pass
         #funkcja pytajaca czy uzytkownik chce utworzyc labirynt jeszcze raz na podstawie innych wymiarow (pozniej mozna zmienic to, ze w jednym oknie bedzie wszystko dzialac i przy kliknieciu generate bedzie tworzyc nowy labirynt)
-    def GenerateLabirynt(self, width, height):
-        #Na podstawie podanych wymiarow tworzymy wierzcholki - jeśli np. width = 50, height = 40, to node 51 jest w tablicy na miejscu [2][1]. Wiersz = n/width, kolumna= n - n/width.
-        # Bazowo miedzy wszystkimi miejscami w tablicy jest sciana, a MSP bedziemy je usuwac. Przejdzmy wiec po wszystkich parach a b, gdzie a, b nalezy do przedzialu (1, ilosc wierzcholkow) i wylosujmy liczbe z przedzialu (1, 10^7). Pozniej posortujmy krawedzie i zrobmy MSP na nich. Ustalone MSP bedzie droga poprawna w labiryncie. Wiec odczytamy ta droge i usuniemy poprawne sciany w tablicy. Na koncu wystarczy wybrac dowolny node na wyjscie i wejscie i mamy labirynt. 
+    def GenerateLabirynt(self, width, height, cellSize=4):
         edges = []
         vert = [[1, 0], [-1, 0], [0, 1], [0,-1]]
         for i in range(1, width*height+1):
@@ -136,26 +134,25 @@ class Labirynth:
                 #a is less than b, so it must be above b
                 Mapinfo[a][3] = 0
                 Mapinfo[b][1] = 0
-        LabIm = Image.new("RGB", (width*4+1, height*4+1), color='white')
+        LabIm = Image.new("RGB", (width*cellSize+1, height*cellSize+1), color='white')
         LabImDraw = ImageDraw.Draw(LabIm)
-        LabImDraw.rectangle([(0,0),(width*4, height*4)], fill='white', outline='black')
+        LabImDraw.rectangle([(0,0),(width*cellSize, height*cellSize)], fill='white', outline='black')
         id = 1
         for j in range(1, height+1):
             for i in range(1,width+1):
-                self.DrawCell(LabImDraw, i, j, Mapinfo[id])
+                self.DrawCell(LabImDraw, i, j, Mapinfo[id], cellSize)
                 id+=1 
-        LabImDraw.rectangle([(0, 1), (0, 3)], fill = 'white', outline = 'white')
-        LabImDraw.rectangle([(width*4, 1+(height-1)*4), (width*4, 1+(height-1)*4+2)], fill = 'white', outline = 'white')
+        LabImDraw.rectangle([(0, 1), (0, cellSize-1)], fill = 'white', outline = 'white')
+        LabImDraw.rectangle([(width*cellSize, 1+(height-1)*cellSize), (width*cellSize, height*cellSize-1)], fill = 'white', outline = 'white')
         return LabIm
-        # LabIm.show()
-    def DrawCell(self, LabImDraw, x, y, infoDraw):
+    def DrawCell(self, LabImDraw, x, y, infoDraw, cellSize = 4):
         # center = [[int(2+(x-1)*4)],[int(2+(y-1)*4)]]
-        centerx = int(2+(x-1)*4)
-        centery = int(2+(y-1)*4)
-        lewygornyrog = (centerx-2, centery-2)
-        lewydolnyrog = (centerx-2, centery+2)
-        prawydolnyrog = (centerx+2, centery+2)
-        prawygornyrog = (centerx+2, centery-2)
+        centerx = int(cellSize//2+(x-1)*cellSize)
+        centery = int(cellSize//2+(y-1)*cellSize)
+        lewygornyrog = (centerx-cellSize//2, centery-cellSize//2)
+        lewydolnyrog = (centerx-cellSize//2, centery+cellSize//2)
+        prawydolnyrog = (centerx+cellSize//2, centery+cellSize//2)
+        prawygornyrog = (centerx+cellSize//2, centery-cellSize//2)
         if(infoDraw[0] == 1):
             LabImDraw.rectangle([lewygornyrog, lewydolnyrog], fill='black')
         if(infoDraw[1] == 1):
