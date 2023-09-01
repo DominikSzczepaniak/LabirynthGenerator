@@ -2,7 +2,6 @@ import tkinter as tk
 from collections import defaultdict
 from tkinter import *
 from tkinter import filedialog, messagebox, Scale
-import tkinter
 from PIL import Image, ImageDraw, ImageTk
 from random import seed
 from random import randint
@@ -18,9 +17,9 @@ import time
 
 class SpanningTree:
     def __init__(self, width, height):
-        rozmiar = width * height
-        self.parent = [i for i in range(rozmiar+5)]
-        self.size = [1] * (rozmiar+5)
+        size = width * height
+        self.parent = [i for i in range(size+5)]
+        self.size = [1] * (size+5)
     def FindSet(self, a):
         if(a == self.parent[a]):
             return a
@@ -40,6 +39,9 @@ class Labirynth:
     def __init__(self):
         self.SizesGet()
     def SizesGet(self):
+        """
+        Function that gets sizes of labirynt from user.
+        """
         DataInput = tk.Tk()
         width_var = tk.StringVar()
         height_var = tk.StringVar()
@@ -48,9 +50,11 @@ class Labirynth:
         tk.Label(DataInput, text="Width:").grid(column=0, row=1)
         tk.Entry(DataInput, textvariable=height_var).grid(column=1, row=0)
         tk.Entry(DataInput, textvariable=width_var).grid(column=1, row=1)
-        tk.Button(DataInput, text="Generate", command=lambda: self.checkSizes(height_var.get(), width_var.get(), DataInput)).grid(column=0, row=3)
-        tkinter.Scale(DataInput, from_=4, to=64,variable=cellSize_var, orient=tkinter.HORIZONTAL).grid(column=0, row=4)
+        tk.Label(DataInput, text="Cell size:").grid(column=0, row=3)
+        tk.Scale(DataInput, from_=4, to=64,variable=cellSize_var, orient=tk.HORIZONTAL).grid(column=1, row=3)
+        tk.Button(DataInput, text="Generate", command=lambda: self.checkSizes(height_var.get(), width_var.get(), DataInput)).grid(column=1, row=4)
         DataInput.geometry("400x200")
+        DataInput.title("Labirynth generator")
         DataInput.mainloop()
         cellSize = int(cellSize_var.get())
         if(cellSize%2==1):
